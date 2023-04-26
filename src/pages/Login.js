@@ -64,7 +64,7 @@ export default function Login() {
         </div>
       </div>
       <div className="w-full h-full">
-        <img src="/abstract.png" alt="login" className="w-full h-full" />
+        <img src="./abstract.png" alt="login" className="w-full h-full" />
       </div>
     </div>
   );
