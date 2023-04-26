@@ -36,7 +36,7 @@ export default function Commission({ id, transaction }) {
       className="flex flex-col justify-between p-4 text-left rounded-md shadow cursor-pointer hover:shadow-lg"
     >
       <div className="flex flex-col gap-4 ">
-        <h1 className="font-bold">{transaction.title}</h1>
+        <h1 className="font-bold line-clamp-2">{transaction.title}</h1>
         <p className="text-sm line-clamp-4">{transaction.description}</p>
         <p className="text-sm">{transaction.amount}</p>
       </div>

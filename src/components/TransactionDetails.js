@@ -188,10 +188,18 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
           transaction.counterparty !== null && (
             <div className="absolute bottom-8 left-8">
               <button
-                className="flex items-center justify-center gap-2 p-4 font-medium text-white rounded-full shadow-xl bg-primary"
+                disabled={loading}
+                className="flex items-center justify-center gap-2 p-4 font-medium text-white rounded-full shadow-xl disabled:bg-primary/60 bg-primary"
                 onClick={handleApprove}
               >
-                <CheckIcon className="w-8 h-8" /> Approve
+                {loading ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <CheckIcon className="w-8 h-8" />
+                    Approve
+                  </>
+                )}
               </button>
             </div>
           )}
@@ -320,7 +328,7 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
                 </button>
                 <button
                   disabled={loading}
-                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary"
+                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary"
                 >
                   {loading ? <Spinner /> : 'Cancel'}
                 </button>
@@ -332,6 +340,7 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleAccept}
+                  disabled={loading}
                   className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary"
                 >
                   {loading ? <Spinner /> : 'Accept'}
@@ -341,7 +350,6 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
           {![0, 1].includes(Number(transaction.status)) && (
             <div className="flex items-center gap-2">
               <button
-                onClick={handleAccept}
                 className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary/40"
                 disabled
               >
@@ -353,7 +361,12 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
       </div>
 
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog closeModal={closeModal} isOpen={isOpen} id={transaction.id} />
+        <Dialog
+          closeModal={closeModal}
+          isOpen={isOpen}
+          id={transaction.id}
+          fetchCommission={fetchCommission}
+        />
       </Transition>
     </div>
   );
