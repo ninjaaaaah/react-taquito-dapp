@@ -121,7 +121,7 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
     <div className="flex bg-white shadow-xl w-ful rounded-xl overflow-clip">
       <div className="relative flex items-center w-1/2">
         <img
-          src="/transaction.png"
+          src="./transaction.png"
           alt="transaction"
           className="absolute top-0 left-0 object-cover w-full h-full"
         />

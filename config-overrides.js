@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function override(config) {
   const fallback = config.resolve.fallback || {};
@@ -18,7 +17,6 @@ module.exports = function override(config) {
       process: 'process/browser',
       Buffer: ['buffer', 'Buffer'],
     }),
-    new NodePolyfillPlugin(),
   ]);
   return config;
 };
