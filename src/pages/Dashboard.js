@@ -13,10 +13,8 @@ import {
   getCompleted,
   getPending,
   getPendingReverts,
-  getStorage,
   getTransactionCount,
   getTransactions,
-  getUserTransactions,
 } from './../utils/storage';
 
 // components
