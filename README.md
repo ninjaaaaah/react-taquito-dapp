@@ -6,4 +6,4 @@
 
 ### Contract Deployment: Ghostnet
 
-### Dapp Link: https://task-chain.vercel.app/admin
+### Dapp Link: https://task-chain.vercel.app/
