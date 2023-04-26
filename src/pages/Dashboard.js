@@ -46,7 +46,6 @@ function Dashboard() {
   const [table, setTable] = useState(choices[0]);
 
   const fetchCommissions = useCallback(async () => {
-    console.log('Hi!');
     switch (table.name) {
       case 'All Commissions':
         const transactionCount = await getTransactionCount();
@@ -108,6 +107,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (!account.authenticated) {
+      console.log('redirecting');
       navigate('/login');
     }
     if (account.type === 'admin') {

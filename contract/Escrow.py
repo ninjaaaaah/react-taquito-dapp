@@ -277,7 +277,7 @@ class Escrow(sp.Contract):
         sp.verify(transaction.counterpartyHasWithdrawn == sp.bool(True),
                   "Counterparty did not cancel the commission.")
         sp.verify(transaction.status != sp.int(2),
-                  "Transaction has been completed.")
+                  "Transaction has already been completed.")
         sp.verify(transaction.status != sp.int(-1),
                   "Transaction has already been reverted.")
 

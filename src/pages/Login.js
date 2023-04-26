@@ -8,11 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import AccountContext from '../contexts/account-data';
 import ContractContext from '../contexts/contract-data';
 import Logo from '../components/Logo';
+import Spinner from '../components/Spinner';
 
 export default function Login() {
   const navigate = useNavigate();
   const contract = useContext(ContractContext);
   const account = useContext(AccountContext);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -34,8 +37,14 @@ export default function Login() {
   }, [account, navigate]);
 
   const connect = async () => {
-    await connectWallet();
-    await account.fetchAccountData(true, contract.storage);
+    setLoading(true);
+    try {
+      await connectWallet();
+      await account.fetchAccountData(true, contract.storage);
+    } catch (error) {
+      toast.error(error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -53,10 +62,10 @@ export default function Login() {
               <div className="mt-6">
                 <button
                   type="button"
-                  className="w-full px-4 py-2 font-medium tracking-wide transition-colors duration-200 transform border-2 rounded-full text-primary border-primary hover:bg-primary hover:text-white focus:outline-none focus:bg-primary"
+                  className="flex justify-center w-full px-4 py-2 font-medium tracking-wide transition-colors duration-200 transform border-2 rounded-full text-primary border-primary hover:bg-primary hover:text-white focus:outline-none focus:bg-primary"
                   onClick={connect}
                 >
-                  🌮 Connect
+                  {loading ? <Spinner /> : '🌮 Connect'}
                 </button>
               </div>
             </form>

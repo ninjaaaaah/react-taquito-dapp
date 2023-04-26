@@ -17,7 +17,7 @@ export const AccountDataContextProvider = (props) => {
   const [address, setAddress] = useState(localStorage.getItem('address'));
   const [type, setType] = useState(localStorage.getItem('type'));
   const [authenticated, setAuthenticated] = useState(
-    localStorage.getItem('authenticated')
+    localStorage.getItem('authenticated') === 'true' ? true : false
   );
 
   const setAddressHandler = async () => {

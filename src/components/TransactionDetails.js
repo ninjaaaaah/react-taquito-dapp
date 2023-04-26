@@ -16,6 +16,7 @@ import AccountContext from '../contexts/account-data';
 import Dialog from '../components/ClaimCounterpartyDialog';
 import { Transition } from '@headlessui/react';
 import { toast } from 'react-toastify';
+import Spinner from './Spinner';
 
 const status = {
   '-1': {
@@ -38,6 +39,7 @@ const status = {
 
 const TransactionDetails = ({ transaction, fetchCommission }) => {
   const account = useContext(AccountContext);
+  const [loading, setLoading] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => {
@@ -50,6 +52,7 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
 
   const handleDeposit = async () => {
     try {
+      setLoading(true);
       const address = await getAccountAddress();
 
       switch (address) {
@@ -64,15 +67,16 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
         default:
           break;
       }
-      console.log('deposit');
       await fetchCommission();
     } catch (error) {
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   const handleCancel = async () => {
     try {
+      setLoading(true);
       const address = await getAccountAddress();
 
       switch (address) {
@@ -91,30 +95,40 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
     } catch (error) {
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   const handleClaimOwner = async () => {
     try {
+      setLoading(true);
       await claimOwner(transaction.id);
+      await fetchCommission();
     } catch (error) {
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   const handleAccept = async () => {
     try {
+      setLoading(true);
       await acceptCommision(transaction.id);
+      await fetchCommission();
     } catch (error) {
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   const handleApprove = async () => {
     try {
+      setLoading(true);
       await approveCommission(transaction.id);
+      await fetchCommission();
     } catch (error) {
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   return (
@@ -186,9 +200,6 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
         <div className="flex justify-between">
           <div>
             <div className="flex flex-col w-full gap-4">
-              {Number(transaction.status) === 1 && (
-                <div className="w-4 h-4 rounded-full bg-primary/80 animate-pulse" />
-              )}
               <div>
                 <span
                   className={`px-2 py-1 text-xs rounded-full ${
@@ -244,16 +255,25 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
             transaction.owner === account.address && (
               <div className="flex items-center gap-2">
                 <button
+                  disabled={loading}
                   onClick={
                     Number(transaction.balanceOwner) === 0
                       ? handleDeposit
                       : handleCancel
                   }
-                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary"
+                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary"
                 >
-                  {Number(transaction.balanceOwner) === 0
-                    ? 'Deposit'
-                    : 'Cancel'}
+                  {Number(transaction.balanceOwner) === 0 ? (
+                    loading ? (
+                      <Spinner />
+                    ) : (
+                      'Deposit'
+                    )
+                  ) : loading ? (
+                    <Spinner />
+                  ) : (
+                    'Cancel'
+                  )}
                 </button>
               </div>
             )}
@@ -261,16 +281,25 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
             transaction.counterparty === account.address && (
               <div className="flex items-center gap-2">
                 <button
+                  disabled={loading}
                   onClick={
                     Number(transaction.balanceCounterparty) === 0
                       ? handleDeposit
                       : handleCancel
                   }
-                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary"
+                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary"
                 >
-                  {Number(transaction.balanceCounterparty) === 0
-                    ? 'Deposit'
-                    : 'Cancel'}
+                  {Number(transaction.balanceCounterparty) === 0 ? (
+                    loading ? (
+                      <Spinner />
+                    ) : (
+                      'Deposit'
+                    )
+                  ) : loading ? (
+                    <Spinner />
+                  ) : (
+                    'Cancel'
+                  )}
                 </button>
               </div>
             )}
@@ -279,17 +308,21 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
               transaction.counterparty === account.address) && (
               <div className="flex items-center gap-2">
                 <button
+                  disabled={loading}
                   onClick={
                     account.address === transaction.owner
                       ? handleClaimOwner
                       : openModal
                   }
+                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary"
+                >
+                  {loading ? <Spinner /> : 'Claim'}
+                </button>
+                <button
+                  disabled={loading}
                   className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary"
                 >
-                  Claim
-                </button>
-                <button className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary">
-                  Cancel
+                  {loading ? <Spinner /> : 'Cancel'}
                 </button>
               </div>
             )}
@@ -299,9 +332,9 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={handleAccept}
-                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary"
+                  className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary"
                 >
-                  Accept
+                  {loading ? <Spinner /> : 'Accept'}
                 </button>
               </div>
             )}
@@ -309,7 +342,7 @@ const TransactionDetails = ({ transaction, fetchCommission }) => {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleAccept}
-                className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md bg-primary/40"
+                className="flex items-center justify-center w-full p-4 text-sm font-bold text-white rounded-md disabled:bg-primary/60 bg-primary/40"
                 disabled
               >
                 {Number(transaction.status) === 2 ? 'Claimed' : 'Cancelled'}

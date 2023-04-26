@@ -33,6 +33,8 @@ import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Filters from '../components/Filters';
 import { revertCommissionFunds } from '../utils/operations';
+import Spinner from '../components/Spinner';
+import { toast } from 'react-toastify';
 
 const status = {
   '-1': {
@@ -65,11 +67,11 @@ const Admin = () => {
       },
       Title: {
         accessor: 'title',
-        shown: true,
+        shown: false,
       },
       Description: {
         accessor: 'description',
-        shown: true,
+        shown: false,
       },
       'Owner Balance': {
         accessor: 'balanceOwner',
@@ -118,6 +120,7 @@ const Admin = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
   const [table, setTable] = useState(choices[0]);
+  const [loading, setLoading] = useState(false);
 
   const fetchCommissions = useCallback(async () => {
     console.log('Hi!');
@@ -181,6 +184,7 @@ const Admin = () => {
   }, [fetchCommissions]);
 
   useEffect(() => {
+    console.log(account.authenticated);
     if (!account.authenticated) {
       navigate('/login');
     }
@@ -234,16 +238,18 @@ const Admin = () => {
       return;
     }
 
-    const newTransactions = await getTransactions(
-      page * newPageSize,
-      newPageSize
-    );
-    setTransactions(newTransactions);
-    setPageSize(newPageSize);
+    fetchCommissions();
   };
 
   const handleApproveRevert = async () => {
-    await revertCommissionFunds(selected);
+    setLoading(true);
+    try {
+      await revertCommissionFunds(selected);
+      fetchCommissions();
+    } catch (err) {
+      toast.error(err.message);
+    }
+    setLoading(false);
   };
 
   const handleSelect = (transaction) => {
@@ -260,6 +266,10 @@ const Admin = () => {
     );
   };
 
+  const gotoTransactionPage = () => {
+    navigate(`/transaction/${selected}`);
+  };
+
   return (
     mounted.current && (
       <div className="flex flex-col min-h-screen min-w-screen bg-primary/10">
@@ -271,10 +281,22 @@ const Admin = () => {
               {selected && isPendingRevert && (
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md bg-secondary hover:bg-secondary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md bg-secondary disabled:bg-secondary/60 hover:bg-secondary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                   onClick={handleApproveRevert}
+                  disabled={loading}
                 >
-                  Approve
+                  {loading ? <Spinner className="w-5 h-5" /> : 'Approve'}
+                </button>
+              )}
+              {selected && (
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md bg-secondary hover:bg-secondary/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  onClick={() => {
+                    gotoTransactionPage();
+                  }}
+                >
+                  View
                 </button>
               )}
               <div className="relative">
@@ -350,7 +372,7 @@ const Admin = () => {
                           case 'key':
                             return (
                               showedColumns[col].shown && (
-                                <td className="px-4 py-2 whitespace-nowrap ">
+                                <td className="px-4 py-2 whitespace-nowrap">
                                   {transaction[showedColumns[col].accessor]}
                                 </td>
                               )
@@ -440,7 +462,7 @@ const Admin = () => {
                           default:
                             return (
                               showedColumns[col].shown && (
-                                <td className="px-4 py-2 text-center whitespace-nowrap">
+                                <td className="px-4 py-2 text-center whitespace-nowrap max-w-[10rem] truncate">
                                   {
                                     transaction.value[
                                       showedColumns[col].accessor
@@ -543,6 +565,7 @@ const choices = [
   { name: 'All Commissions' },
   { name: 'Cancelled' },
   { name: 'To Revert' },
+  { name: 'Pending' },
   { name: 'Completed' },
   { name: 'Active' },
 ];

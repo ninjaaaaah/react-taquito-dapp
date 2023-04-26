@@ -14,6 +14,7 @@ const CustomDialog = React.forwardRef(({ closeModal, isOpen }, ref) => {
   const [loading, setLoading] = useState(false);
 
   const createTransaction = async () => {
+    setLoading(true);
     try {
       const transaction = {
         title,
@@ -25,14 +26,12 @@ const CustomDialog = React.forwardRef(({ closeModal, isOpen }, ref) => {
       };
 
       console.log(transaction);
-
-      setLoading(true);
       await postCommission(transaction);
-      setLoading(false);
       closeModal();
     } catch (error) {
       toast.error(error.message);
     }
+    setLoading(false);
   };
 
   return (

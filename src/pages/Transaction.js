@@ -14,7 +14,6 @@ const Transaction = () => {
   const mounted = useRef(false);
 
   useEffect(() => {
-    console.log(account);
     if (!account.authenticated) {
       navigate('/');
     }

@@ -12,7 +12,7 @@ import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
-    <BrowserRouter basename="/task-chain">
+    <BrowserRouter>
       <ToastContainer />
       <ContractDataContext>
         <AccountDataContextProvider>
